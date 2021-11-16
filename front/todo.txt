@@ -1,0 +1,13 @@
+Todo:
+Front:
+ - Ad blocks,Filter bg remove - DONE
+ - Dealerships blocks ( Resmi numayende,Sade )
+ - Vip,Premium + Modal
+ - Dealership Balance Account
+ - Remove Subscribe - DONE
+ - Image Observation - DONE
+ - WishList
+ - Register
+
+Features:
+ - PDF

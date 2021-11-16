@@ -1,0 +1,50 @@
+version: '3'
+
+volumes:
+  local_pg_data: { }
+  local_pg_data_backups: { }
+
+services:
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile.prod
+    command: /venv/bin/gunicorn general.wsgi --bind 0.0.0.0:8000
+    volumes:
+      - ./back:/code
+      - ./back/static:/static
+      - ./back/media:/media
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12.2-alpine
+    ports:
+      - 5432:5432 # Bind host port 5432 to PostgreSQL port 5432
+    volumes:
+      - local_pg_data:/var/lib/postgresql/data
+      - local_pg_data_backups:/backups
+    env_file: ./back/.env
+
+  nuxt:
+    build:
+      context: ./front
+    restart: always
+    volumes:
+      - ./logs:/src/root/.npm/_logs
+    ports:
+      - "3000:3000"
+    command:
+      "npm run start"
+
+  nginx:
+    image: nginx:1.19
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./logs:/var/log/nginx/
+      - ./back/static:/var/www/static
+      - ./back/media:/var/www/media
+    depends_on:
+      - nuxt
